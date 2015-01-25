@@ -16,9 +16,10 @@ defaults
     option httpclose
     option forceclose
     option http-pretend-keepalive
+    balance roundrobin
 
 frontend public
-    bind *:8000
+    bind *:80
 
     acl is_api_domain hdr_beg(host) -i api.
     http-request deny unless is_api_domain
