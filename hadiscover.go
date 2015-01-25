@@ -8,14 +8,14 @@ import (
 
 var filename = flag.String("config","./haproxy.cfg.tpl","Template config file used for HAproxy")
 var name     = flag.String("name","back","Base name used for backends")
-var haproxy  = flag.String("ha","/usr/bin/haproxy","Path to the `haproxy` executable")
+var haproxy  = flag.String("ha","/usr/local/bin/haproxy","Path to the `haproxy` executable")
 var etcdHost = flag.String("etcd","http://localhost:4001","etcd server(s)")
 var etcdKey  = flag.String("key","services","etcd root key to look for")
 
 var configFile = ".haproxy.cfg"
 
-func reloadConf(etcdClient *etcd.Client)(error){
-    backends,_ := GetBackends(etcdClient,*etcdKey,*name)
+func reloadConf(etcdClient *etcd.Client)(error) {
+    backends, _ := GetBackends(etcdClient, *etcdKey, *name)
 
     err := createConfigFile(backends, *filename, configFile)
     if(err != nil){
@@ -25,7 +25,7 @@ func reloadConf(etcdClient *etcd.Client)(error){
     return reloadHAproxy(*haproxy, configFile)
 }
 
-func main(){
+func main() {
     flag.Parse()
 
     var etcdClient = etcd.NewClient([]string{*etcdHost})
@@ -43,15 +43,15 @@ func main(){
             if (reload){
                 err := reloadConf(etcdClient)
                 if(err != nil){
-                    log.Println("Cannot reload haproxy: ",err,msg)
+                    log.Println("Cannot reload haproxy: ", err, msg)
                 }
             }
         }
     }()
 
     log.Println("Start watching changes in etcd")
-    if _, err := etcdClient.Watch(*etcdKey,0, true, changeChan, stopChan) ; err != nil{
-        log.Println("Cannot register watcher for changes in etcd: ",err)
+    if _, err := etcdClient.Watch(*etcdKey, 0, true, changeChan, stopChan) ; err != nil{
+        log.Println("Cannot register watcher for changes in etcd: ", err)
     }    
 
 }
