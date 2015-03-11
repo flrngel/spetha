@@ -25,7 +25,7 @@ var etcdHost = flag.String(
 	"etcd server(s)")
 var etcdKey = flag.String(
 	"key",
-	getEnvOrDefault("HADISCOVER_KEY", "services"),
+	getEnvOrDefault("HADISCOVER_KEY", "BLACKHOLE"),
 	"etcd root key to look for")
 
 var configFile = ".haproxy.cfg"

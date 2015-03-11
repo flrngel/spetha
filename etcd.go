@@ -13,24 +13,42 @@ type Backend struct {
 	Port string
 }
 
-func GetBackends(client *etcd.Client, service, backendName string) (map[string][]Backend, error) {
+func GetBackends(client *etcd.Client, followServicesString, backendName string) (map[string][]Backend, error) {
 
-	resp, err := client.Get(service, false, true)
+	resp, err := client.Get("sp/", false, true)
 	if err != nil {
 		log.Println("Error when reading etcd: ", err)
 		return nil, err
 	} else {
 		backends := make(map[string][]Backend)
+		followServices := strings.Split(followServicesString, ",")
 
-		for index, element := range resp.Node.Nodes {
+		for _, element := range resp.Node.Nodes {
+			key := (*element).Key // key format is: /sp/<SP_GROUP>/<IP:PORT>
+			splited := strings.Split(key, "/")
 
-			key := (*element).Key // key format is: /service/IP:PORT
-			service := strings.Split(key[strings.LastIndex(key, "/")+1:], ":")
-			serviceType := (*element).Value
+			serviceFlag := false
+			for _, followService := range followServices {
+				if followService == splited[2] {
+					serviceFlag = true
+					break
+				}
+			}
+			if serviceFlag == false {
+				continue
+			}
 
-			backend := Backend{Name: fmt.Sprintf("back-%v", index), Ip: service[0], Port: service[1]}
+			for index2, element2 := range (*element).Nodes {
+				key := (*element2).Key // key format is: /sp/<SP_GROUP>/<IP:PORT>
+				splited2 := strings.Split(key, "/")
+				service := strings.Split(splited2[3], ":")
 
-			backends[serviceType] = append(backends[serviceType], backend)
+				serviceType := splited2[1]
+
+				backend := Backend{Name: fmt.Sprintf("back-%v", index2), Ip: service[0], Port: service[1]}
+
+				backends[serviceType] = append(backends[serviceType], backend)
+			}
 		}
 		return backends, nil
 	}
