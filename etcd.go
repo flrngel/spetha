@@ -43,7 +43,7 @@ func GetBackends(client *etcd.Client, followServicesString, backendName string) 
 				splited2 := strings.Split(key, "/")
 				service := strings.Split(splited2[3], ":")
 
-				serviceType := splited2[1]
+				serviceType := splited2[2]
 
 				backend := Backend{Name: fmt.Sprintf("back-%v", index2), Ip: service[0], Port: service[1]}
 
