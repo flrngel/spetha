@@ -25,7 +25,7 @@ var etcdHost = flag.String(
 	"etcd server(s)")
 var etcdKey = flag.String(
 	"key",
-	getEnvOrDefault("HADISCOVER_KEY", "BLACKHOLE"),
+	getEnvOrDefault("HADISCOVER_KEY", "webserver"),
 	"etcd root key to look for")
 
 var configFile = ".haproxy.cfg"
@@ -68,7 +68,7 @@ func main() {
 	}()
 
 	log.Println("Start watching changes in etcd")
-	if _, err := etcdClient.Watch(*etcdKey, 0, true, changeChan, stopChan); err != nil {
+	if _, err := etcdClient.Watch("sp/", 0, true, changeChan, stopChan); err != nil {
 		log.Println("Cannot register watcher for changes in etcd: ", err)
 	}
 

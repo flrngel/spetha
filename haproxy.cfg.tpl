@@ -20,14 +20,7 @@ defaults
 
 frontend public
     bind *:80
-
-    acl is_api_domain hdr_beg(host) -i api.
-    http-request deny unless is_api_domain
-    {{range $serviceName, $servers := .}}{{if not (eq $serviceName "bootstrap")}}
-    acl is_{{$serviceName}} path_beg /{{$serviceName}}
-    use_backend {{$serviceName}} if is_{{$serviceName}}
-    {{end}}{{end}}
-    default_backend bootstrap
+    default_backend webserver
 
 {{range $serviceName, $servers := .}}
 backend {{$serviceName}}
