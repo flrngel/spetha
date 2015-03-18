@@ -1,5 +1,7 @@
 # SPETHA
 
+forked from [jphastings/hadiscover](https://github.com/jphastings/hadiscover)
+
 [specialone](https://github.com/flrngel/specialone) + [etcd](https://github.com/coreos/etcda) + [HAProxy](http://www.haproxy.org/)
 
 ## Usage
